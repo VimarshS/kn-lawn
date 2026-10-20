@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { dataService } from '../../services/dataService';
 import { LawnEvent, BookingEnquiry, AvailabilityBlock } from '../../types';
+import { getTodayIST } from '../../utils/date';
 
 export const AdminDashboardPage: React.FC = () => {
   const [events, setEvents] = useState<LawnEvent[]>(() => dataService.getEvents(false));
@@ -39,7 +40,7 @@ export const AdminDashboardPage: React.FC = () => {
 
   const recentEnquiries = enquiries.slice(0, 5);
   const upcomingEvents = events
-    .filter((e) => e.eventDate >= '2026-10-19')
+    .filter((e) => e.eventDate >= getTodayIST())
     .sort((a, b) => a.eventDate.localeCompare(b.eventDate))
     .slice(0, 4);
 
