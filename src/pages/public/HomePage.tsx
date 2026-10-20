@@ -39,25 +39,25 @@ export const HomePage: React.FC = () => {
     {
       title: 'Grand Weddings',
       desc: 'Sprawling green lawns under illuminated star-lit canopies and custom mandap architecture.',
-      image: '/src/assets/images/hero_wedding_lawn_1792477779485.jpg',
+      image: '/images/hero_wedding_lawn_1792477779485.jpg',
       category: 'wedding',
     },
     {
       title: 'Evening Receptions',
       desc: 'Sophisticated open-air stage setups, banquet table hospitality, and live acoustics.',
-      image: '/src/assets/images/lawn_reception_stage_1792477779365.jpg',
+      image: '/images/lawn_reception_stage_1792477779365.jpg',
       category: 'reception',
     },
     {
       title: 'Vedic Pheras & Sangeet',
       desc: 'Sacred ceremonies, fragrant marigold decor, brass diyas, and celebratory family vibes.',
-      image: '/src/assets/images/lawn_mandap_ceremony_1792477779867.jpg',
+      image: '/images/lawn_mandap_ceremony_1792477779867.jpg',
       category: 'wedding',
     },
     {
       title: 'Engagements & Anniversaries',
       desc: 'Intimate royal celebrations with grand illuminated floral walkways and customized catering lawns.',
-      image: '/src/assets/images/lawn_entrance_walkway_1792477779864.jpg',
+      image: '/images/lawn_entrance_walkway_1792477779864.jpg',
       category: 'engagement',
     },
   ];
@@ -69,7 +69,7 @@ export const HomePage: React.FC = () => {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
-            src={settings.heroImageUrl || '/src/assets/images/hero_wedding_lawn_1792477779485.jpg'}
+            src={settings.heroImageUrl || '/images/hero_wedding_lawn_1792477779485.jpg'}
             alt="K.N. Lawn illuminated wedding celebration"
             className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000"
             referrerPolicy="no-referrer"
@@ -171,7 +171,7 @@ export const HomePage: React.FC = () => {
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
                 <img
-                  src="/src/assets/images/lawn_mandap_ceremony_1792477779867.jpg"
+                  src="/images/lawn_mandap_ceremony_1792477779867.jpg"
                   alt="Vedic Mandap ceremony at K.N. Lawn"
                   className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700"
                   referrerPolicy="no-referrer"

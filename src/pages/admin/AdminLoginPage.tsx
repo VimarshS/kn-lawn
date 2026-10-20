@@ -46,7 +46,7 @@ export const AdminLoginPage: React.FC = () => {
       {/* Background Decor */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <img
-          src="/src/assets/images/hero_wedding_lawn_1792477779485.jpg"
+          src="/images/hero_wedding_lawn_1792477779485.jpg"
           alt="Background"
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"

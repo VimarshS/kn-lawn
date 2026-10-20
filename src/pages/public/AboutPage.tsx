@@ -33,7 +33,7 @@ export const AboutPage: React.FC = () => {
       <section className="bg-[#102820] text-white py-16 sm:py-20 border-b border-[#C6A66B]/30 relative overflow-hidden">
         <div className="absolute inset-0 opacity-15">
           <img
-            src="/src/assets/images/hero_wedding_lawn_1792477779485.jpg"
+            src="/images/hero_wedding_lawn_1792477779485.jpg"
             alt="K.N. Lawn background"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
@@ -93,7 +93,7 @@ export const AboutPage: React.FC = () => {
           <div className="lg:col-span-5 space-y-4">
             <div className="rounded-2xl overflow-hidden shadow-lg border-2 border-white">
               <img
-                src="/src/assets/images/lawn_reception_stage_1792477779365.jpg"
+                src="/images/lawn_reception_stage_1792477779365.jpg"
                 alt="Reception decor at K.N. Lawn"
                 className="w-full h-72 object-cover"
                 referrerPolicy="no-referrer"
@@ -101,7 +101,7 @@ export const AboutPage: React.FC = () => {
             </div>
             <div className="rounded-2xl overflow-hidden shadow-lg border-2 border-white">
               <img
-                src="/src/assets/images/lawn_entrance_walkway_1792477779864.jpg"
+                src="/images/lawn_entrance_walkway_1792477779864.jpg"
                 alt="Grand entrance walkway at K.N. Lawn"
                 className="w-full h-72 object-cover"
                 referrerPolicy="no-referrer"

@@ -16,10 +16,10 @@ import { useToast } from '../../context/ToastContext';
 
 // Preset gallery images available for fast selection
 const PRESET_IMAGES = [
-  '/src/assets/images/hero_wedding_lawn_1792477779485.jpg',
-  '/src/assets/images/lawn_reception_stage_1792477779365.jpg',
-  '/src/assets/images/lawn_mandap_ceremony_1792477779867.jpg',
-  '/src/assets/images/lawn_entrance_walkway_1792477779864.jpg',
+  '/images/hero_wedding_lawn_1792477779485.jpg',
+  '/images/lawn_reception_stage_1792477779365.jpg',
+  '/images/lawn_mandap_ceremony_1792477779867.jpg',
+  '/images/lawn_entrance_walkway_1792477779864.jpg',
 ];
 
 export const AdminEventEditorPage: React.FC = () => {
