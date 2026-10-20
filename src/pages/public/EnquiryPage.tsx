@@ -17,6 +17,7 @@ import {
 import { dataService } from '../../services/dataService';
 import { BookingEnquiry } from '../../types';
 import { useToast } from '../../context/ToastContext';
+import { getTodayIST } from '../../utils/date';
 
 export const EnquiryPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -40,8 +41,8 @@ export const EnquiryPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedEnquiry, setSubmittedEnquiry] = useState<BookingEnquiry | null>(null);
 
-  // Today's date string for min date (current year 2026)
-  const todayStr = '2026-10-19';
+  // Today's date in India (YYYY-MM-DD), used as the earliest allowed date
+  const todayStr = getTodayIST();
 
   useEffect(() => {
     if (prefillDate) {
