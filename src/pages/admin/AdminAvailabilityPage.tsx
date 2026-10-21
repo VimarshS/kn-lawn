@@ -15,6 +15,7 @@ import {
 import { dataService } from '../../services/dataService';
 import { AvailabilityBlock, AvailabilityStatus } from '../../types';
 import { useToast } from '../../context/ToastContext';
+import { getTodayIST } from '../../utils/date';
 
 export const AdminAvailabilityPage: React.FC = () => {
   const toast = useToast();
@@ -22,12 +23,18 @@ export const AdminAvailabilityPage: React.FC = () => {
     dataService.getAvailabilityBlocks()
   );
 
-  // Month navigation for admin calendar
-  const [viewDate, setViewDate] = useState(() => new Date(2026, 9, 1)); // Oct 2026
+  // Today's date in India (YYYY-MM-DD)
+  const todayStr = getTodayIST();
 
-  // Form states for adding or editing a block
-  const [startDate, setStartDate] = useState('2026-11-20');
-  const [endDate, setEndDate] = useState('2026-11-20');
+  // Month navigation for admin calendar: starts on the current month
+  const [viewDate, setViewDate] = useState(() => {
+    const [y, m] = todayStr.split('-').map(Number);
+    return new Date(y, m - 1, 1); // month is 0-indexed in JS, so subtract 1
+  });
+
+  // Form states for adding or editing a block: start with today
+  const [startDate, setStartDate] = useState(todayStr);
+  const [endDate, setEndDate] = useState(todayStr);
   const [blockStatus, setBlockStatus] = useState<AvailabilityStatus>('unavailable');
   const [privateNote, setPrivateNote] = useState('');
 
