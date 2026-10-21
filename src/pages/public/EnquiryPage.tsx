@@ -18,6 +18,7 @@ import { dataService } from '../../services/dataService';
 import { BookingEnquiry } from '../../types';
 import { useToast } from '../../context/ToastContext';
 import { getTodayIST } from '../../utils/date';
+import { useSettings } from '../../hooks/useSettings';
 
 export const EnquiryPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -25,6 +26,7 @@ export const EnquiryPage: React.FC = () => {
   const prefillType = searchParams.get('type') || '';
 
   const toast = useToast();
+  const settings = useSettings();
 
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -209,7 +211,7 @@ export const EnquiryPage: React.FC = () => {
             {/* Next Steps & Action Buttons */}
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href={`https://wa.me/919450023456?text=${encodeURIComponent(
+                href={`https://wa.me/${settings.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
                   `Namaste, I submitted an enquiry for K.N. Lawn (Ref: ${submittedEnquiry.referenceCode}) for ${submittedEnquiry.preferredDate}. Please let me know the availability.`
                 )}`}
                 target="_blank"
@@ -221,7 +223,7 @@ export const EnquiryPage: React.FC = () => {
               </a>
 
               <a
-                href="tel:+919450023456"
+                href={`tel:${settings.phone.replace(/\s/g, '')}`}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-xs font-semibold uppercase tracking-wider text-[#102820] bg-stone-200 hover:bg-stone-300"
               >
                 <Phone className="w-4 h-4" />
