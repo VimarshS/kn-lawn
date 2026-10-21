@@ -13,6 +13,7 @@ import {
 import { dataService } from '../../services/dataService';
 import { LawnEvent, EventCategory } from '../../types';
 import { useToast } from '../../context/ToastContext';
+import { getTodayIST } from '../../utils/date';
 
 // Preset gallery images available for fast selection
 const PRESET_IMAGES = [
@@ -33,7 +34,7 @@ export const AdminEventEditorPage: React.FC = () => {
   const [title, setTitle] = useState(existingEvent?.title || '');
   const [slug, setSlug] = useState(existingEvent?.slug || '');
   const [category, setCategory] = useState<EventCategory>(existingEvent?.category || 'wedding');
-  const [eventDate, setEventDate] = useState(existingEvent?.eventDate || '2026-11-20');
+  const [eventDate, setEventDate] = useState(existingEvent?.eventDate || getTodayIST());
   const [endDate, setEndDate] = useState(existingEvent?.endDate || '');
   const [guestCount, setGuestCount] = useState(existingEvent?.guestCountEstimated?.toString() || '600');
   const [description, setDescription] = useState(existingEvent?.description || '');
