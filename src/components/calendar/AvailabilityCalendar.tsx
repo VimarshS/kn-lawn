@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { dataService } from '../../services/dataService';
 import { AvailabilityStatus } from '../../types';
+import { getTodayIST } from '../../utils/date';
 
 interface AvailabilityCalendarProps {
   onSelectDate?: (dateStr: string) => void;
@@ -22,10 +23,10 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   selectedDate,
   isAdmin = false,
 }) => {
-  // Current view month (default: current date 2026-10 or today)
+  // Current view month: starts on the current month in India
   const [viewDate, setViewDate] = useState(() => {
-    // Current date from metadata: 2026-10-19
-    return new Date(2026, 9, 1); // October 2026
+    const [y, m] = getTodayIST().split('-').map(Number);
+    return new Date(y, m - 1, 1); // month is 0-indexed in JS, so subtract 1
   });
 
   const [activeDate, setActiveDate] = useState<string | null>(selectedDate || null);
