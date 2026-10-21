@@ -14,6 +14,7 @@ import {
   INITIAL_ENQUIRIES,
   INITIAL_ADMIN_USER,
 } from './mockData';
+import { getTodayIST } from '../utils/date';
 
 const STORAGE_KEYS = {
   SETTINGS: 'kn_lawn_settings_v1',
@@ -112,7 +113,7 @@ class DataStore {
         title: eventData.title,
         slug,
         category: eventData.category || 'wedding',
-        eventDate: eventData.eventDate || new Date().toISOString().split('T')[0],
+        eventDate: eventData.eventDate || getTodayIST(),
         endDate: eventData.endDate,
         description: eventData.description || '',
         coverImageUrl: eventData.coverImageUrl || '/images/hero_wedding_lawn_1792477779485.jpg',
