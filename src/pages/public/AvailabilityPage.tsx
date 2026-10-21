@@ -12,9 +12,11 @@ import {
 } from 'lucide-react';
 import { AvailabilityCalendar } from '../../components/calendar/AvailabilityCalendar';
 import { dataService } from '../../services/dataService';
+import { useSettings } from '../../hooks/useSettings';
 
 export const AvailabilityPage: React.FC = () => {
   const navigate = useNavigate();
+  const settings = useSettings();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const handleDateSelect = (dateStr: string) => {
@@ -138,11 +140,11 @@ export const AvailabilityPage: React.FC = () => {
                 If you are planning a multi-day ceremony (e.g. Sangeet + Vivah) or have specific muhurat timings, call our booking desk directly.
               </p>
               <a
-                href="tel:+919450023456"
+                href={`tel:${settings.phone.replace(/\s/g, '')}`}
                 className="inline-flex items-center gap-2 w-full justify-center py-2.5 rounded-lg text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 transition-colors"
               >
                 <Phone className="w-4 h-4 text-[#DFC493]" />
-                <span>Call +91 94500 23456</span>
+                <span>Call {settings.phone}</span>
               </a>
             </div>
           </div>
