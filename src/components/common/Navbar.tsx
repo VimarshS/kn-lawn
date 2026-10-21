@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, CalendarCheck, Phone, Shield } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useSettings } from '../../hooks/useSettings';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const settings = useSettings();
 
   const navLinks = [
     { label: 'Home', path: '/' },
@@ -139,11 +141,11 @@ export const Navbar: React.FC = () => {
             </Link>
 
             <a
-              href="tel:+919450023456"
+              href={`tel:${settings.phone.replace(/\s/g, '')}`}
               className="flex items-center justify-center gap-2 w-full py-2 text-sm text-[#F8F5EF]/80 hover:text-white"
             >
               <Phone className="w-4 h-4 text-[#C6A66B]" />
-              <span>Call Owner: +91 94500 23456</span>
+              <span>Call Owner: {settings.phone}</span>
             </a>
 
             <div className="pt-2 text-center">
