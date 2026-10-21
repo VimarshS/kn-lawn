@@ -11,9 +11,11 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useSettings } from '../../hooks/useSettings';
 
 export const Footer: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  const settings = useSettings();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -37,7 +39,7 @@ export const Footer: React.FC = () => {
             </p>
             <div className="pt-2 flex items-center gap-3">
               <a
-                href="https://wa.me/919450023456"
+                href={`https://wa.me/${settings.whatsapp.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded border border-[#C6A66B]/50 text-[#DFC493] hover:bg-[#183D32] transition-colors"
@@ -46,7 +48,7 @@ export const Footer: React.FC = () => {
                 <span>WhatsApp Us</span>
               </a>
               <a
-                href="tel:+919450023456"
+                href={`tel:${settings.phone.replace(/\s/g, '')}`}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded border border-[#C6A66B]/50 text-[#DFC493] hover:bg-[#183D32] transition-colors"
               >
                 <Phone className="w-3.5 h-3.5 text-[#C6A66B]" />
@@ -103,17 +105,17 @@ export const Footer: React.FC = () => {
               <div className="flex items-start gap-2.5">
                 <Phone className="w-4 h-4 text-[#C6A66B] shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-medium text-[#F8F5EF]">+91 94500 23456</div>
+                  <div className="font-medium text-[#F8F5EF]">{settings.phone}</div>
                   <span className="text-[11px] text-[#F8F5EF]/60">Proprietor / Booking Desk</span>
                 </div>
               </div>
               <div className="flex items-start gap-2.5">
                 <Mail className="w-4 h-4 text-[#C6A66B] shrink-0 mt-0.5" />
                 <a
-                  href="mailto:contact@knlawn.com"
+                  href={`mailto:${settings.email}`}
                   className="hover:text-[#DFC493] transition-colors"
                 >
-                  contact@knlawn.com
+                  {settings.email}
                 </a>
               </div>
               <div className="flex items-start gap-2.5">
