@@ -158,11 +158,11 @@ export const HomePage: React.FC = () => {
               </Link>
               <span className="text-stone-300">|</span>
               <a
-                href="tel:+919450023456"
+                href={`tel:${settings.phone.replace(/\s/g, '')}`}
                 className="inline-flex items-center gap-2 text-sm font-semibold text-[#C6A66B] hover:underline"
               >
                 <Phone className="w-4 h-4" />
-                <span>Call: +91 94500 23456</span>
+                <span>Call: {settings.phone}</span>
               </a>
             </div>
           </div>
