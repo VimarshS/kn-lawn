@@ -1,6 +1,0 @@
-{
-  "name": "K.N. Lawn — Premium Wedding & Event Venue",
-  "description": "Official digital presence, event gallery, availability calendar, and booking portal for K.N. Lawn.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
