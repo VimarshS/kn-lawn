@@ -1,0 +1,7 @@
+{
+  "name": "kn-lawn-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend API for the K.N. Lawn website",
+  "scripts": {}
+}
