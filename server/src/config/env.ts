@@ -10,6 +10,7 @@ if (existsSync('.env')) {
 // The list of settings the server needs, and the rules each must follow.
 const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   MONGODB_URI: z.string().startsWith('mongodb'),
 });
 
