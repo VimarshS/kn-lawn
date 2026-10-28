@@ -17,3 +17,12 @@ export function isValidDateString(value: string): boolean {
     date.getUTCDate() === day
   );
 }
+
+/** Number of calendar days from start to end, counting both ends (same day = 1). */
+export function countDaysInclusive(start: string, end: string): number {
+  const [startYear, startMonth, startDay] = start.split('-').map(Number);
+  const [endYear, endMonth, endDay] = end.split('-').map(Number);
+  const millis =
+    Date.UTC(endYear, endMonth - 1, endDay) - Date.UTC(startYear, startMonth - 1, startDay);
+  return Math.round(millis / 86_400_000) + 1; // 86,400,000 ms = one day
+}
