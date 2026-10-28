@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
 import { env } from '../config/env';
-import { connectDatabase } from '../config/database';
+import { connectDatabase, disconnectDatabase } from '../config/database';
 import { SiteSettings } from '../models/SiteSettings';
 import { demoSettings } from './demoSettings';
 
@@ -34,4 +33,4 @@ seed()
     console.error('Seeding failed:', error instanceof Error ? error.message : error);
     process.exitCode = 1;
   })
-  .finally(() => mongoose.disconnect());
+  .finally(() => disconnectDatabase());

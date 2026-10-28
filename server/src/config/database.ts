@@ -16,3 +16,10 @@ export async function connectDatabase(): Promise<void> {
 
   console.log(`Connected to MongoDB (database: ${mongoose.connection.name})`);
 }
+
+/** Closes the connection on purpose, for example at the end of a script. */
+export async function disconnectDatabase(): Promise<void> {
+  // We are closing it deliberately, so don't print the "connection lost" warning.
+  mongoose.connection.removeAllListeners('disconnected');
+  await mongoose.disconnect();
+}
