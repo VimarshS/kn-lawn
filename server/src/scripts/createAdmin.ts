@@ -1,41 +1,10 @@
-import { createInterface } from 'node:readline/promises';
-import { Writable } from 'node:stream';
 import { connectDatabase, disconnectDatabase } from '../config/database';
 import { AdminUser } from '../models/AdminUser';
-import { hashPassword } from '../utils/password';
+import { hashPassword, MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from '../utils/password';
+import { createPrompter } from './prompt';
 
-const MIN_PASSWORD_LENGTH = 12;
-const MAX_PASSWORD_LENGTH = 128;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-// An output stream we can switch off, so a typed password is not shown on screen.
-let muted = false;
-const output = new Writable({
-  write(chunk, encoding, callback) {
-    if (!muted) process.stdout.write(chunk, encoding);
-    callback();
-  },
-});
-
-const rl = createInterface({ input: process.stdin, output, terminal: true });
-rl.on('SIGINT', () => {
-  console.log('\nCancelled. Nothing was saved.');
-  process.exit(1);
-});
-
-async function askVisible(prompt: string): Promise<string> {
-  process.stdout.write(prompt);
-  return (await rl.question('')).trim();
-}
-
-async function askHidden(prompt: string): Promise<string> {
-  process.stdout.write(prompt);
-  muted = true;
-  const answer = await rl.question('');
-  muted = false;
-  process.stdout.write('\n');
-  return answer;
-}
+const prompter = createPrompter();
 
 async function main(): Promise<void> {
   await connectDatabase();
@@ -47,12 +16,12 @@ async function main(): Promise<void> {
   }
 
   console.log('Create the owner account for the admin portal.');
-  const name = await askVisible('Name: ');
-  const email = (await askVisible('Email: ')).toLowerCase();
-  const password = await askHidden(
+  const name = await prompter.askVisible('Name: ');
+  const email = (await prompter.askVisible('Email: ')).toLowerCase();
+  const password = await prompter.askHidden(
     `Password (${MIN_PASSWORD_LENGTH} to ${MAX_PASSWORD_LENGTH} characters, hidden): `,
   );
-  const repeated = await askHidden('Repeat password (hidden): ');
+  const repeated = await prompter.askHidden('Repeat password (hidden): ');
 
   const problems: string[] = [];
   if (!name) problems.push('Name is required.');
@@ -85,6 +54,6 @@ main()
     process.exitCode = 1;
   })
   .finally(async () => {
-    rl.close();
+    prompter.close();
     await disconnectDatabase();
   });

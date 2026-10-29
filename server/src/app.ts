@@ -2,6 +2,7 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import helmet from 'helmet';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { authRouter } from './routes/authRoutes';
 
 export function createApp() {
   const app = express();
@@ -15,7 +16,7 @@ export function createApp() {
     res.json({ ok: true });
   });
 
-  // Real routes will be added here, one phase at a time.
+  app.use('/api/auth', authRouter);
 
   // These two must stay last.
   app.use(notFoundHandler);

@@ -1,5 +1,8 @@
 import * as argon2 from 'argon2';
 
+export const MIN_PASSWORD_LENGTH = 12;
+export const MAX_PASSWORD_LENGTH = 128;
+
 /** Turns a password into a one-way hash that is safe to store. */
 export async function hashPassword(plainPassword: string): Promise<string> {
   return argon2.hash(plainPassword, { type: argon2.argon2id });
