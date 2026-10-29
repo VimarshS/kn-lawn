@@ -11,6 +11,8 @@ import {
   setSessionCookie,
 } from '../utils/sessionCookie';
 import { loginSchema } from '../validation/authSchemas';
+import { requireAdmin } from '../middleware/requireAdmin';
+import { toPublicAdmin } from '../utils/publicAdmin';
 
 export const authRouter = Router();
 
@@ -18,15 +20,15 @@ export const authRouter = Router();
 // answer takes the same time and does not reveal which emails have accounts.
 const dummyHash = hashPassword(randomBytes(16).toString('hex'));
 
-/** The only admin fields that may ever be sent to a browser. */
-function toPublicAdmin(user: {
-  _id: { toString(): string };
-  name: string;
-  email: string;
-  role: string;
-}) {
-  return { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
-}
+// /** The only admin fields that may ever be sent to a browser. */
+// function toPublicAdmin(user: {
+//   _id: { toString(): string };
+//   name: string;
+//   email: string;
+//   role: string;
+// }) {
+//   return { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
+// }
 
 // POST /api/auth/login   body: { email, password }
 authRouter.post('/login', loginRateLimiter, async (req, res) => {
@@ -56,4 +58,9 @@ authRouter.post('/logout', async (req, res) => {
   if (typeof token === 'string') await destroySession(token);
   clearSessionCookie(res);
   res.status(204).end();
+});
+
+// GET /api/auth/me   Who am I? The website calls this when it loads.
+authRouter.get('/me', requireAdmin, (req, res) => {
+  res.json({ user: req.admin });
 });

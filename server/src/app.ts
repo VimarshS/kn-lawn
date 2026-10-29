@@ -3,6 +3,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { authRouter } from './routes/authRoutes';
+import { requireTrustedOrigin } from './middleware/requireTrustedOrigin';
 
 export function createApp() {
   const app = express();
@@ -10,6 +11,7 @@ export function createApp() {
   app.use(helmet()); // standard security headers (it also removes "X-Powered-By")
   app.use(express.json({ limit: '100kb' })); // refuse oversized request bodies
   app.use(cookieParser());
+    app.use('/api', requireTrustedOrigin);
 
   // A "health check": a URL that answers "yes, the server is alive"
   app.get('/api/health', (_req, res) => {

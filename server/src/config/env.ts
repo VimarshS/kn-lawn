@@ -11,6 +11,7 @@ if (existsSync('.env')) {
 const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  CLIENT_ORIGIN: z.string().url().default('http://localhost:3000'),
   MONGODB_URI: z.string().startsWith('mongodb'),
 });
 
