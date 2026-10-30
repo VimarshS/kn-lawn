@@ -18,21 +18,19 @@ export const AdminLoginPage: React.FC = () => {
 
   const from = (location.state as any)?.from?.pathname || '/admin/dashboard';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
     setIsLoading(true);
 
-    setTimeout(() => {
-      const res = login(email.trim(), password);
-      setIsLoading(false);
-      if (res.success) {
-        toast.success('Welcome back, Proprietor!');
-        navigate(from, { replace: true });
-      } else {
-        setErrorMsg(res.error || 'Authentication failed.');
-      }
-    }, 400);
+    const res = await login(email.trim(), password);
+    setIsLoading(false);
+    if (res.success) {
+      toast.success('Welcome back, Proprietor!');
+      navigate(from, { replace: true });
+    } else {
+      setErrorMsg(res.error || 'Authentication failed.');
+    }
   };
 
   const fillDemoCredentials = () => {

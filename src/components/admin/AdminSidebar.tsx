@@ -30,8 +30,8 @@ export const AdminSidebar: React.FC = () => {
     { label: 'Lawn Settings', path: '/admin/settings', icon: Settings },
   ];
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     toast.info('Signed out of admin workspace.');
     navigate('/admin/login');
   };

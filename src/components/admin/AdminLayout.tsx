@@ -4,8 +4,17 @@ import { AdminSidebar } from './AdminSidebar';
 import { useAuth } from '../../context/AuthContext';
 
 export const ProtectedRoute: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isCheckingSession } = useAuth();
   const location = useLocation();
+
+  // Wait for the server's answer, or a page refresh would bounce you to the login page.
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-sm text-stone-500">
+        Checking your session…
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" state={{ from: location }} replace />;

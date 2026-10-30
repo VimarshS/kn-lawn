@@ -32,7 +32,7 @@ export interface AvailabilityBlock {
   status: AvailabilityStatus;
   privateNote: string;
   linkedBookingId?: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export type EnquiryStatus =
@@ -97,5 +97,5 @@ export interface AdminUser {
   name: string;
   email: string;
   role: 'owner' | 'manager';
-  createdAt: string;
+  createdAt?: string;
 }
