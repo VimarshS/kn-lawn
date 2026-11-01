@@ -3,7 +3,6 @@ import {
   AvailabilityBlock,
   BookingEnquiry,
   SiteSettings,
-  AdminUser,
   AvailabilityStatus,
   EnquiryStatus,
 } from '../types';
@@ -12,7 +11,6 @@ import {
   INITIAL_EVENTS,
   INITIAL_AVAILABILITY_BLOCKS,
   INITIAL_ENQUIRIES,
-  INITIAL_ADMIN_USER,
 } from './mockData';
 import { getTodayIST } from '../utils/date';
 
@@ -21,7 +19,6 @@ const STORAGE_KEYS = {
   EVENTS: 'kn_lawn_events_v1',
   AVAILABILITY: 'kn_lawn_availability_v1',
   ENQUIRIES: 'kn_lawn_enquiries_v1',
-  AUTH: 'kn_lawn_admin_session_v1',
 };
 
 // Safe localStorage access with memory fallback
@@ -307,30 +304,7 @@ class DataStore {
     };
   }
 
-  // --- Auth ---
-  getCurrentAdminUser(): AdminUser | null {
-    return this.getItem<AdminUser | null>(STORAGE_KEYS.AUTH, null);
-  }
-
-  loginAdmin(email: string, pass: string): { success: boolean; user?: AdminUser; error?: string } {
-    // In this prototype, mock owner credentials for review
-    if (email.toLowerCase() === 'admin@knlawn.com' && pass === 'admin123') {
-      const user = INITIAL_ADMIN_USER;
-      this.setItem(STORAGE_KEYS.AUTH, user);
-      this.notifyChange('auth');
-      return { success: true, user };
-    }
-    return { success: false, error: 'Invalid email or password. Use demo credentials: admin@knlawn.com / admin123' };
-  }
-
-  logoutAdmin(): void {
-    try {
-      localStorage.removeItem(STORAGE_KEYS.AUTH);
-    } catch {
-      delete this.memoryFallback[STORAGE_KEYS.AUTH];
-    }
-    this.notifyChange('auth');
-  }
+   
 
   // --- Reset to Factory Demo Defaults ---
   resetToDefaults(): void {

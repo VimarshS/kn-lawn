@@ -1,4 +1,4 @@
-import { LawnEvent, AvailabilityBlock, BookingEnquiry, SiteSettings, AdminUser } from '../types';
+import { LawnEvent, AvailabilityBlock, BookingEnquiry, SiteSettings } from '../types';
 
 export const INITIAL_SETTINGS: SiteSettings = {
   lawnName: 'K.N. Lawn',
@@ -292,10 +292,3 @@ export const INITIAL_ENQUIRIES: BookingEnquiry[] = [
   },
 ];
 
-export const INITIAL_ADMIN_USER: AdminUser = {
-  id: 'usr-1',
-  name: 'V.K. Singh',
-  email: 'admin@knlawn.com',
-  role: 'owner',
-  createdAt: '2026-01-01T00:00:00Z',
-};
