@@ -3,6 +3,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { authRouter } from './routes/authRoutes';
+import { settingsRouter } from './routes/settingsRoutes';
 import { requireTrustedOrigin } from './middleware/requireTrustedOrigin';
 
 export function createApp() {
@@ -19,6 +20,7 @@ export function createApp() {
   });
 
   app.use('/api/auth', authRouter);
+  app.use('/api/settings', settingsRouter);
 
   // These two must stay last.
   app.use(notFoundHandler);
