@@ -1,6 +1,11 @@
 import { connectDatabase, disconnectDatabase } from '../config/database';
 import { AdminUser } from '../models/AdminUser';
-import { hashPassword, MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from '../utils/password';
+import {
+  checkPasswordStrength,
+  hashPassword,
+  MAX_PASSWORD_LENGTH,
+  MIN_PASSWORD_LENGTH,
+} from '../utils/password';
 import { createPrompter } from './prompt';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -26,9 +31,8 @@ async function main(): Promise<void> {
   const problems: string[] = [];
   if (!name) problems.push('Name is required.');
   if (!EMAIL_PATTERN.test(email)) problems.push('Email does not look valid.');
-  if (password.length < MIN_PASSWORD_LENGTH || password.length > MAX_PASSWORD_LENGTH) {
-    problems.push(`Password must be ${MIN_PASSWORD_LENGTH} to ${MAX_PASSWORD_LENGTH} characters.`);
-  }
+  const strengthProblem = checkPasswordStrength(password);
+  if (strengthProblem) problems.push(strengthProblem);
   if (password !== repeated) problems.push('The two passwords do not match.');
 
   if (problems.length > 0) {
