@@ -1,4 +1,5 @@
 import { SiteSettings } from '../models/SiteSettings';
+import type { UpdateSettingsInput } from '../validation/settingsSchemas';
 
 /** The settings that are safe to show to any visitor. Nothing else may be added by accident. */
 export interface PublicSettings {
@@ -61,4 +62,14 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     })),
     enquiryInstructions: doc.enquiryInstructions,
   };
+}
+
+/** Saves the settings (creating the one settings record if it does not exist yet). */
+export async function updateSettings(data: UpdateSettingsInput): Promise<PublicSettings> {
+  await SiteSettings.findOneAndUpdate(
+    { key: 'main' },
+    { $set: data },
+    { upsert: true, runValidators: true },
+  );
+  return getPublicSettings();
 }

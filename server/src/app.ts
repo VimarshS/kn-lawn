@@ -5,6 +5,7 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { authRouter } from './routes/authRoutes';
 import { settingsRouter } from './routes/settingsRoutes';
 import { requireTrustedOrigin } from './middleware/requireTrustedOrigin';
+import { adminSettingsRouter } from './routes/adminSettingsRoutes';
 
 export function createApp() {
   const app = express();
@@ -21,6 +22,7 @@ export function createApp() {
 
   app.use('/api/auth', authRouter);
   app.use('/api/settings', settingsRouter);
+  app.use('/api/admin/settings', adminSettingsRouter);
 
   // These two must stay last.
   app.use(notFoundHandler);
