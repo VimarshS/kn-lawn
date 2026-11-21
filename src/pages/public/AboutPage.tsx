@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles,
@@ -14,18 +14,10 @@ import {
   Phone,
   ArrowRight,
 } from 'lucide-react';
-import { dataService } from '../../services/dataService';
-import { SiteSettings } from '../../types';
+import { useSettings } from '../../hooks/useSettings';
 
 export const AboutPage: React.FC = () => {
-  const [settings, setSettings] = useState<SiteSettings>(() => dataService.getSettings());
-
-  useEffect(() => {
-    const unsub = dataService.subscribe(() => {
-      setSettings(dataService.getSettings());
-    });
-    return unsub;
-  }, []);
+  const settings = useSettings();
 
   return (
     <div className="space-y-20 pb-20">

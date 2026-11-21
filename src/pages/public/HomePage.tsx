@@ -18,18 +18,18 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { dataService } from '../../services/dataService';
-import { LawnEvent, SiteSettings } from '../../types';
+import { useSettings } from '../../hooks/useSettings';
+import { LawnEvent } from '../../types';
 import { AvailabilityCalendar } from '../../components/calendar/AvailabilityCalendar';
 
 export const HomePage: React.FC = () => {
-  const [settings, setSettings] = useState<SiteSettings>(() => dataService.getSettings());
+  const settings = useSettings();
   const [featuredEvents, setFeaturedEvents] = useState<LawnEvent[]>(() =>
     dataService.getEvents(true).slice(0, 3)
   );
 
   useEffect(() => {
-    const unsub = dataService.subscribe(() => {
-      setSettings(dataService.getSettings());
+    const unsub = dataService.subscribe(() => { 
       setFeaturedEvents(dataService.getEvents(true).slice(0, 3));
     });
     return unsub;

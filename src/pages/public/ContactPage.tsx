@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   MapPin,
   Phone,
@@ -10,12 +10,11 @@ import {
   Send,
   CheckCircle2,
 } from 'lucide-react';
-import { dataService } from '../../services/dataService';
-import { SiteSettings } from '../../types';
+import { useSettings } from '../../hooks/useSettings';
 import { useToast } from '../../context/ToastContext';
 
 export const ContactPage: React.FC = () => {
-  const [settings, setSettings] = useState<SiteSettings>(() => dataService.getSettings());
+  const settings = useSettings();
   const toast = useToast();
 
   const [senderName, setSenderName] = useState('');
@@ -23,12 +22,6 @@ export const ContactPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isSent, setIsSent] = useState(false);
 
-  useEffect(() => {
-    const unsub = dataService.subscribe(() => {
-      setSettings(dataService.getSettings());
-    });
-    return unsub;
-  }, []);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
