@@ -1,13 +1,11 @@
 import {
   LawnEvent,
   AvailabilityBlock,
-  BookingEnquiry,
-  SiteSettings,
+  BookingEnquiry, 
   AvailabilityStatus,
   EnquiryStatus,
 } from '../types';
-import {
-  INITIAL_SETTINGS,
+import { 
   INITIAL_EVENTS,
   INITIAL_AVAILABILITY_BLOCKS,
   INITIAL_ENQUIRIES,
@@ -15,7 +13,6 @@ import {
 import { getTodayIST } from '../utils/date';
 
 const STORAGE_KEYS = {
-  SETTINGS: 'kn_lawn_settings_v1',
   EVENTS: 'kn_lawn_events_v1',
   AVAILABILITY: 'kn_lawn_availability_v1',
   ENQUIRIES: 'kn_lawn_enquiries_v1',
@@ -45,19 +42,6 @@ class DataStore {
     } catch {
       this.memoryFallback[key] = value;
     }
-  }
-
-  // --- Settings ---
-  getSettings(): SiteSettings {
-    return this.getItem<SiteSettings>(STORAGE_KEYS.SETTINGS, INITIAL_SETTINGS);
-  }
-
-  updateSettings(updated: Partial<SiteSettings>): SiteSettings {
-    const current = this.getSettings();
-    const merged = { ...current, ...updated };
-    this.setItem(STORAGE_KEYS.SETTINGS, merged);
-    this.notifyChange('settings');
-    return merged;
   }
 
   // --- Events ---
@@ -304,16 +288,6 @@ class DataStore {
     };
   }
 
-   
-
-  // --- Reset to Factory Demo Defaults ---
-  resetToDefaults(): void {
-    this.setItem(STORAGE_KEYS.SETTINGS, INITIAL_SETTINGS);
-    this.setItem(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
-    this.setItem(STORAGE_KEYS.AVAILABILITY, INITIAL_AVAILABILITY_BLOCKS);
-    this.setItem(STORAGE_KEYS.ENQUIRIES, INITIAL_ENQUIRIES);
-    this.notifyChange('all');
-  }
 
   // Event listener subscription for multi-component reactivity
   private listeners: Array<() => void> = [];
