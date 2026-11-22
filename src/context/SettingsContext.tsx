@@ -29,6 +29,8 @@ interface SettingsContextValue {
   settings: SiteSettings;
   status: SettingsStatus;
   reload: () => void;
+  /** Used after the owner saves, so every page shows the new values at once. */
+  applySettings: (settings: SiteSettings) => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
@@ -57,9 +59,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [attempt]);
 
   const reload = () => setAttempt((count) => count + 1);
+  
+  const applySettings = (next: SiteSettings) => {
+    setSettings(next);
+    setStatus('ready');
+  };
 
   return (
-    <SettingsContext.Provider value={{ settings, status, reload }}>
+    <SettingsContext.Provider value={{ settings, status, reload , applySettings}}>
       {children}
     </SettingsContext.Provider>
   );

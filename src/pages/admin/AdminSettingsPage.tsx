@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Save,
-  RotateCcw,
   ExternalLink,
   Plus,
   Trash2,
@@ -14,22 +13,71 @@ import {
   Clock,
   Sparkles,
 } from 'lucide-react';
-import { dataService } from '../../services/dataService';
+import { api, ApiError } from '../../services/api';
 import { SiteSettings, Facility } from '../../types';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
+import { useSettingsContext } from '../../context/SettingsContext';
 
+// Friendly names for the fields the server may complain about
+const FIELD_LABELS: Record<string, string> = {
+  lawnName: 'Venue name',
+  ownerName: 'Proprietor name',
+  description: 'Short description',
+  phone: 'Phone',
+  whatsapp: 'WhatsApp',
+  email: 'Email',
+  businessHours: 'Business hours',
+  address: 'Address',
+  mapsEmbedUrl: 'Map embed link',
+  directionsUrl: 'Directions link',
+  heroHeading: 'Hero heading',
+  heroDescription: 'Hero description',
+  heroImageUrl: 'Hero image',
+  aboutStory: 'About story',
+  enquiryInstructions: 'Enquiry instructions',
+  'socialLinks.instagram': 'Instagram link',
+  'socialLinks.facebook': 'Facebook link',
+  'socialLinks.youtube': 'YouTube link',
+};
+
+function describeField(field: string): string {
+  const facility = field.match(/^facilities\.(\d+)\.(\w+)$/);
+  if (facility) return `Facility ${Number(facility[1]) + 1} (${facility[2]})`;
+  return FIELD_LABELS[field] ?? field;
+}
+
+/** Waits for the saved settings to load, then shows the form. */
 export const AdminSettingsPage: React.FC = () => {
-  const toast = useToast();
-  const [settings, setSettings] = useState<SiteSettings>(() => dataService.getSettings());
-  const [showResetModal, setShowResetModal] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const { settings, status, reload } = useSettingsContext();
 
-  useEffect(() => {
-    const unsub = dataService.subscribe(() => {
-      setSettings(dataService.getSettings());
-    });
-    return unsub;
-  }, []);
+  if (status === 'loading') {
+    return <p className="text-sm text-stone-500">Loading settings…</p>;
+  }
+  if (status === 'error') {
+    return (
+      <div className="space-y-3">
+        <p className="text-sm text-stone-700">Could not load the settings. Please try again.</p>
+        <button
+          type="button"
+          onClick={reload}
+          className="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-[#183D32]"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+  return <SettingsForm initial={settings} />;
+};
+
+const SettingsForm: React.FC<{ initial: SiteSettings }> = ({ initial }) => {
+  const toast = useToast();
+  const { logout } = useAuth();
+  const { applySettings } = useSettingsContext();
+  const [settings, setSettings] = useState<SiteSettings>(initial);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formErrors, setFormErrors] = useState<string[]>([]);
 
   const handleChange = (field: keyof SiteSettings, value: any) => {
     setSettings((prev) => ({
@@ -68,24 +116,28 @@ export const AdminSettingsPage: React.FC = () => {
     toast.info('Facility removed.');
   };
 
-  const handleSaveAll = (e: React.FormEvent) => {
+  const handleSaveAll = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    setFormErrors([]);
     try {
-      dataService.updateSettings(settings);
+      const data = await api.put<{ settings: SiteSettings }>('/admin/settings', settings);
+      setSettings(data.settings); // the form now shows exactly what was saved
+      applySettings(data.settings); // the public pages update at once
       toast.success('Website settings & owner contact details saved!');
-    } catch (err: any) {
-      toast.error('Failed to save settings.');
+    } catch (err) {
+      if (err instanceof ApiError && err.details?.length) {
+        setFormErrors(err.details.map((d) => `${describeField(d.field)}: ${d.message}`));
+        toast.error('Some settings need fixing. See the list at the top of the form.');
+      } else if (err instanceof ApiError && err.status === 401) {
+        toast.error('Your session has ended. Please log in again.');
+        await logout();
+      } else {
+        toast.error(err instanceof ApiError ? err.message : 'Failed to save settings.');
+      }
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleResetToDefaults = () => {
-    dataService.resetToDefaults();
-    setSettings(dataService.getSettings());
-    setShowResetModal(false);
-    toast.success('Lawn database reset to pristine factory demo data.');
   };
 
   return (
@@ -115,6 +167,22 @@ export const AdminSettingsPage: React.FC = () => {
       </div>
 
       <form onSubmit={handleSaveAll} className="space-y-8">
+        {formErrors.length > 0 && (
+          <div
+            role="alert"
+            className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-800 space-y-2"
+          >
+            <div className="flex items-center gap-2 font-semibold">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>Please fix the following before saving:</span>
+            </div>
+            <ul className="list-disc pl-5 space-y-1">
+              {formErrors.map((message) => (
+                <li key={message}>{message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         {/* Section 1: Venue & Owner Identity */}
         <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6">
           <h2 className="font-display text-lg font-bold text-[#102820] flex items-center gap-2">
@@ -364,15 +432,7 @@ export const AdminSettingsPage: React.FC = () => {
         </div>
 
         {/* Action Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-stone-200">
-          <button
-            type="button"
-            onClick={() => setShowResetModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold text-stone-600 hover:text-red-700 border border-stone-300 hover:border-red-300 transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Demo Data to Defaults</span>
-          </button>
+        <div className="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4 border-t border-stone-200">
 
           <button
             type="submit"
@@ -383,40 +443,7 @@ export const AdminSettingsPage: React.FC = () => {
             <span>{isSaving ? 'Saving...' : 'Save All Settings'}</span>
           </button>
         </div>
-      </form>
-
-      {/* Reset Confirmation Dialog */}
-      {showResetModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center gap-3 text-red-600">
-              <AlertTriangle className="w-6 h-6 shrink-0" />
-              <h3 className="font-display text-lg font-bold text-stone-900">
-                Reset Demo Data?
-              </h3>
-            </div>
-            <p className="text-xs text-stone-600 leading-relaxed">
-              This will restore the initial events, availability blocks, enquiries, and settings for K.N. Lawn.
-            </p>
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowResetModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-stone-600 hover:bg-stone-100 rounded-lg"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleResetToDefaults}
-                className="px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm"
-              >
-                Yes, Reset All
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </form>    
     </div>
   );
 };
