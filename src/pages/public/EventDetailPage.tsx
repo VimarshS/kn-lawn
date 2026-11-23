@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Calendar,
@@ -10,8 +10,8 @@ import {
   ChevronRight,
   Share2,
 } from 'lucide-react';
-import { dataService } from '../../services/dataService';
-import { LawnEvent } from '../../types';
+import { useApiData } from '../../hooks/useApiData';
+import { PublicEvent } from '../../types';
 import { Lightbox } from '../../components/common/Lightbox';
 import { useToast } from '../../context/ToastContext';
 
@@ -20,18 +20,33 @@ export const EventDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [event, setEvent] = useState<LawnEvent | undefined>(() =>
-    slug ? dataService.getEventBySlug(slug) : undefined
+  const { data, error, isLoading, reload } = useApiData<{ event: PublicEvent }>(
+    `/events/${encodeURIComponent(slug ?? '')}`,
   );
+  const event = data?.event;
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
-  useEffect(() => {
-    if (slug) {
-      setEvent(dataService.getEventBySlug(slug));
-    }
-  }, [slug]);
+  if (isLoading) {
+    return <p className="text-center text-sm text-stone-500 py-24">Loading album…</p>;
+  }
+
+  // Something other than "not found" went wrong, for example the server was unreachable.
+  if (error && error.status !== 404) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-24 text-center space-y-3">
+        <p className="text-sm text-stone-700">We could not load this album right now.</p>
+        <button
+          type="button"
+          onClick={reload}
+          className="px-4 py-2 text-xs font-semibold text-[#183D32] border border-[#183D32]/30 rounded-lg hover:bg-stone-50"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
 
   if (!event) {
     return (
@@ -40,7 +55,7 @@ export const EventDetailPage: React.FC = () => {
           Celebration Album Not Found
         </h2>
         <p className="mt-2 text-sm text-stone-600">
-          The requested event may be in draft mode or no longer available.
+          This album may have been removed, or the link may be incorrect.
         </p>
         <Link
           to="/events"
