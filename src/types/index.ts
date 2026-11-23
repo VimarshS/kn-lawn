@@ -23,6 +23,9 @@ export interface LawnEvent {
   updatedAt: string;
 }
 
+/** An event as the public API returns it: no status and no timestamps. */
+export type PublicEvent = Omit<LawnEvent, 'status' | 'createdAt' | 'updatedAt'>;
+
 export type AvailabilityStatus = 'available' | 'unavailable' | 'pending';
 
 export interface AvailabilityBlock {

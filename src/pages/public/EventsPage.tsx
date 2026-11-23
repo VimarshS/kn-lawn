@@ -8,23 +8,18 @@ import {
   Filter,
   Image as ImageIcon,
 } from 'lucide-react';
-import { dataService } from '../../services/dataService';
-import { LawnEvent, EventCategory } from '../../types';
+import { useApiData } from '../../hooks/useApiData';
+import { PublicEvent } from '../../types';
 
 export const EventsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCategory = searchParams.get('category') || 'all';
 
-  const [events, setEvents] = useState<LawnEvent[]>(() => dataService.getEvents(true));
+  const { data, error, isLoading, reload } = useApiData<{ events: PublicEvent[] }>('/events');
+  const events = data?.events ?? [];
   const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const unsub = dataService.subscribe(() => {
-      setEvents(dataService.getEvents(true));
-    });
-    return unsub;
-  }, []);
 
   useEffect(() => {
     const cat = searchParams.get('category');
@@ -117,7 +112,20 @@ export const EventsPage: React.FC = () => {
 
         {/* Gallery Grid */}
         <div className="mt-8">
-          {filteredEvents.length === 0 ? (
+          {isLoading ? (
+            <p className="text-center text-sm text-stone-500 py-20">Loading albums…</p>
+          ) : error ? (
+            <div className="text-center py-20 space-y-3">
+              <p className="text-sm text-stone-700">We could not load the albums right now.</p>
+              <button
+                type="button"
+                onClick={reload}
+                className="px-4 py-2 text-xs font-semibold text-[#183D32] border border-[#183D32]/30 rounded-lg hover:bg-stone-50"
+              >
+                Try again
+              </button>
+            </div>
+          ) : filteredEvents.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 p-8 max-w-lg mx-auto">
               <ImageIcon className="w-12 h-12 text-stone-300 mx-auto mb-3" />
               <h3 className="font-display text-lg font-bold text-stone-800">
