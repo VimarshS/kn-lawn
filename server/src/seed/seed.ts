@@ -2,6 +2,8 @@ import { env } from '../config/env';
 import { connectDatabase, disconnectDatabase } from '../config/database';
 import { SiteSettings } from '../models/SiteSettings';
 import { demoSettings } from './demoSettings';
+import { LawnEvent } from '../models/LawnEvent';
+import { demoEvents } from './demoEvents';
 
 async function seed(): Promise<void> {
   // Safety switch: demo data must never reach the real website's database.
@@ -20,11 +22,20 @@ async function seed(): Promise<void> {
     await SiteSettings.create(demoSettings);
     console.log('Demo settings created.');
   }
+  
+  await LawnEvent.init(); // make sure the unique index on "slug" exists
+  if ((await LawnEvent.countDocuments()) > 0) {
+    console.log('Events already exist. Leaving them unchanged.');
+  } else {
+    await LawnEvent.insertMany(demoEvents);
+    console.log(`Demo events created: ${demoEvents.length}.`);
+  }
 
   const count = await SiteSettings.countDocuments();
   const indexes = await SiteSettings.collection.indexes();
   console.log(`Settings documents in database: ${count}`);
   console.log(`Indexes: ${indexes.map((index) => index.name).join(', ')}`);
+  console.log(`Events in database: ${await LawnEvent.countDocuments()}`);
 }
 
 seed()
