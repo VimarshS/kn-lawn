@@ -22,7 +22,7 @@ const email = z
   .refine((value) => value === '' || z.email().safeParse(value).success, 'Enter a valid email address');
 
 /** A link must use https, carry no embedded login, and (optionally) come from allowed hosts. */
-function isAllowedHttpsUrl(value: string, allowedHosts?: string[]): boolean {
+export function isAllowedHttpsUrl(value: string, allowedHosts?: string[]): boolean {
   try {
     const url = new URL(value);
     if (url.protocol !== 'https:') return false;

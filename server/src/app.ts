@@ -7,6 +7,7 @@ import { settingsRouter } from './routes/settingsRoutes';
 import { requireTrustedOrigin } from './middleware/requireTrustedOrigin';
 import { adminSettingsRouter } from './routes/adminSettingsRoutes';
 import { eventRouter } from './routes/eventRoutes';
+import { adminEventRouter } from './routes/adminEventRoutes';
 
 export function createApp() {
   const app = express();
@@ -25,6 +26,7 @@ export function createApp() {
   app.use('/api/settings', settingsRouter);
   app.use('/api/events', eventRouter);
   app.use('/api/admin/settings', adminSettingsRouter);
+  app.use('/api/admin/events', adminEventRouter);
 
   // These two must stay last.
   app.use(notFoundHandler);
