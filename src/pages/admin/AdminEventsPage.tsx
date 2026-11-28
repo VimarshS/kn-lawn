@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Plus,
@@ -12,40 +12,55 @@ import {
   ExternalLink,
   AlertTriangle,
 } from 'lucide-react';
-import { dataService } from '../../services/dataService';
+import { api, ApiError } from '../../services/api';
+import { useApiData } from '../../hooks/useApiData';
+import { useAuth } from '../../context/AuthContext';
 import { LawnEvent } from '../../types';
 import { useToast } from '../../context/ToastContext';
 
 export const AdminEventsPage: React.FC = () => {
   const toast = useToast();
-  const [events, setEvents] = useState<LawnEvent[]>(() => dataService.getEvents(false));
+  const { logout } = useAuth();
+  const { data, error, isLoading, reload } = useApiData<{ events: LawnEvent[] }>('/admin/events');
+  const events = data?.events ?? [];
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Delete modal state
   const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const unsub = dataService.subscribe(() => {
-      setEvents(dataService.getEvents(false));
-    });
-    return unsub;
-  }, []);
-
-  const handleToggleStatus = (evt: LawnEvent) => {
-    const nextStatus = evt.status === 'published' ? 'draft' : 'published';
-    dataService.saveEvent({
-      ...evt,
-      status: nextStatus,
-    });
-    toast.success(`Event status changed to ${nextStatus}.`);
+  // Shows the server's own message. If the login has ended, goes back to the login page.
+  const reportError = async (err: unknown, fallback: string) => {
+    if (err instanceof ApiError && err.status === 401) {
+      toast.error('Your session has ended. Please log in again.');
+      await logout();
+      return;
+    }
+    toast.error(err instanceof ApiError ? err.message : fallback);
   };
 
-  const confirmDelete = () => {
+  const handleToggleStatus = async (evt: LawnEvent) => {
+    const nextStatus = evt.status === 'published' ? 'draft' : 'published';
+    try {
+      await api.patch(`/admin/events/${evt.id}/status`, { status: nextStatus });
+      toast.success(`Event status changed to ${nextStatus}.`);
+      reload();
+    } catch (err) {
+      await reportError(err, 'Could not change the status.');
+    }
+  };
+
+  const confirmDelete = async () => {
     if (!deletingEventId) return;
-    dataService.deleteEvent(deletingEventId);
-    toast.success('Event album has been deleted.');
-    setDeletingEventId(null);
+    try {
+      await api.delete(`/admin/events/${deletingEventId}`);
+      toast.success('Event album has been deleted.');
+      reload();
+    } catch (err) {
+      await reportError(err, 'Could not delete the event.');
+    } finally {
+      setDeletingEventId(null);
+    }
   };
 
   const filteredEvents = events.filter((e) => {
@@ -123,7 +138,26 @@ export const AdminEventsPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
-              {filteredEvents.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-stone-500">
+                    Loading events…
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center">
+                    <p className="text-stone-700 mb-2">Could not load the events.</p>
+                    <button
+                      type="button"
+                      onClick={reload}
+                      className="px-3 py-1.5 text-xs font-semibold text-[#183D32] border border-[#183D32]/30 rounded-lg hover:bg-stone-50"
+                    >
+                      Try again
+                    </button>
+                  </td>
+                </tr>
+              ) : filteredEvents.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-stone-500">
                     No events match your criteria.
